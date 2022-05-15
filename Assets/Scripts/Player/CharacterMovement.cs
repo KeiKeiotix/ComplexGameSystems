@@ -36,7 +36,10 @@ public class CharacterMovement : MonoBehaviour
         moveInput.y = Input.GetAxis("Vertical");
         jumpInput = Input.GetButton("Jump");
 
-        
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Debug.Break();
+        }
 
     }
 
