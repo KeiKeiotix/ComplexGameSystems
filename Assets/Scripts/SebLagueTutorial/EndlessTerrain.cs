@@ -40,7 +40,8 @@ public class EndlessTerrain : MonoBehaviour
 
     void Update()
     {
-        playerPosition = new Vector2(player.position.x, player.position.z) / mapGenerator.terrainData.uniformScale;
+        playerPosition = new Vector2(player.position.x, player.position.z) / mapGenerator.uniformScale;
+        playerPosition = new Vector2(player.position.x, player.position.z) / mapGenerator.uniformScale;
 
         if ((playerPositionOld - playerPosition).sqrMagnitude > sqrPlayerPosDeltaForChunkUpdate)
         {
@@ -120,8 +121,8 @@ public class EndlessTerrain : MonoBehaviour
             meshCollider = meshObject.AddComponent<MeshCollider>();
             meshRenderer.material = material;
 
-            meshObject.transform.position = positionV3 * mapGenerator.terrainData.uniformScale;
-            meshObject.transform.localScale = Vector3.one * mapGenerator.terrainData.uniformScale;
+            meshObject.transform.position = positionV3 * mapGenerator.uniformScale;
+            meshObject.transform.localScale = Vector3.one * mapGenerator.uniformScale;
 
             //meshObject.transform.localScale = Vector3.one * size / 10.0f;
             meshObject.transform.parent = parent;

@@ -77,7 +77,7 @@ public static class Noise
             }
         }
 
-        Debug.Log("noiseval pre norm: " + noiseMap[(int)halfX, (int)halfY]);
+        //Debug.Log("noiseval pre norm: " + noiseMap[(int)halfX, (int)halfY]);
         for (int y = 0; y < mapY; y++)
         {
             for (int x = 0; x < mapX; x++)

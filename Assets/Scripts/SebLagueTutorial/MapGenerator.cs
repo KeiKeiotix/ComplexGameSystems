@@ -6,6 +6,29 @@ using System;
 
 public class MapGenerator : MonoBehaviour
 {
+    public Noise.NormalizeMode normalizeMode;
+
+    [Range(1f, 500f)]
+    public float noiseScale = 1;
+
+    [Range(1, 10)]
+    public int octaves;
+    [Range(0f, 1f)]
+    public float persistance;
+    [Range(1f, 10f)]
+    public float lacunarity;
+
+    public int seed = 0;
+    public Vector2 offset;
+
+    public float uniformScale = 2f;
+
+    public bool useFlatShading = false;
+    public bool useFalloff = false;
+
+    [Range(1f, 1000f)]
+    public float MeshHeightMultiplier = 1;
+    public AnimationCurve meshHeightCurve;
 
     public enum DrawMode { NoiseMap, ColourMap, Mesh, FalloffMap};
     public DrawMode drawMode;
@@ -27,20 +50,21 @@ public class MapGenerator : MonoBehaviour
     Queue<MapThreadInfo<MeshData>> meshDataThreadInfoQueue;
 
 
-    bool terrainDatauseFlatShading = false;
+    bool uuseFlatShading = false;
 
     public static int mapChunkSize
     {
         get
         {
             //maybe problematic
-
-           // if (instance == null) { instance = new MapGenerator(); }
+           
+           //if (instance == null) { instance = new MapGenerator(); }
 
             //end maybe problematic
 
-            if (instance.terrainDatauseFlatShading) { return 95; }
-            else { return 127; }
+           //if (instance.useFlatShading) 
+            { return 95; }
+            //else { return 127; }
         }
     }
 
@@ -60,7 +84,7 @@ public class MapGenerator : MonoBehaviour
 
     public void DrawMapInEditor()
     {
-        MapData mapData = GenerateMapData(noiseData.offset);
+        MapData mapData = GenerateMapData(offset);
         MapDisplay display = FindObjectOfType<MapDisplay>();
 
   
@@ -74,7 +98,7 @@ public class MapGenerator : MonoBehaviour
         }
         else if (drawMode == DrawMode.Mesh)
         {
-            display.DrawMesh(MeshGenerator.GenerateTerrainMesh(mapData.heightMap, terrainData.MeshHeightMultiplier, terrainData.meshHeightCurve, editorPreviewLOD, terrainData.useFlatShading), TextureGenerator.TextureFromColourMap(mapData.colourMap, mapChunkSize, mapChunkSize));
+            display.DrawMesh(MeshGenerator.GenerateTerrainMesh(mapData.heightMap, MeshHeightMultiplier, meshHeightCurve, editorPreviewLOD,  useFlatShading), TextureGenerator.TextureFromColourMap(mapData.colourMap, mapChunkSize, mapChunkSize));
         } else if (drawMode == DrawMode.FalloffMap)
         {
             display.DrawTexture(TextureGenerator.TextureFromHeightMap(FalloffGenerator.GenerateFalloffMap(mapChunkSize)));
@@ -111,7 +135,7 @@ public class MapGenerator : MonoBehaviour
 
     void MeshDataThread(MapData mapData, int lod, Action<MeshData> callback)
     {
-        MeshData meshData = MeshGenerator.GenerateTerrainMesh(mapData.heightMap, terrainData.MeshHeightMultiplier, terrainData.meshHeightCurve, lod, terrainData.useFlatShading);
+        MeshData meshData = MeshGenerator.GenerateTerrainMesh(mapData.heightMap, MeshHeightMultiplier, meshHeightCurve, lod, useFlatShading);
         lock (meshDataThreadInfoQueue)
         {
             meshDataThreadInfoQueue.Enqueue(new MapThreadInfo<MeshData>(callback, meshData));
@@ -141,14 +165,14 @@ public class MapGenerator : MonoBehaviour
     MapData GenerateMapData(Vector2 centre)
     {
         
-        float[,] noiseMap = Noise.GenerateNoiseMap(mapChunkSize + 2, mapChunkSize + 2, noiseData.seed, noiseData.noiseScale, noiseData.octaves, noiseData.persistance, noiseData.lacunarity, centre+ noiseData.offset, noiseData.normalizeMode);
+        float[,] noiseMap = Noise.GenerateNoiseMap(mapChunkSize + 2, mapChunkSize + 2, seed, noiseScale, octaves, persistance, lacunarity, centre+ offset, normalizeMode);
 
         Color[] colourMap = new Color[mapChunkSize * mapChunkSize];
         for (int y = 0; y < mapChunkSize; y++)
         {
             for (int x = 0; x < mapChunkSize; x++)
             {
-                if (terrainData.useFalloff)
+                if (useFalloff)
                 {
                     noiseMap[x,y] -= falloffMap[x, y];
                 }
