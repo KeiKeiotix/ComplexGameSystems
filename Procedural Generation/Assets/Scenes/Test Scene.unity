@@ -556,13 +556,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44fef79510b489f4195f59e178b75114, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  xSize: 64
-  zSize: 64
+  xSize: 128
+  zSize: 128
   resolution: 1
-  Frequency: 3
-  Amplitude: 6
+  Frequency: 5
+  Amplitude: 8
   octaves: 3
-  OctaveFrequency: 2
+  OctaveFrequency: 5
   OctaveAmplititude: 0.5
   update: 0
 --- !u!23 &2038409087

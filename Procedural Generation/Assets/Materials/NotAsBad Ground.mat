@@ -93,10 +93,13 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - Column: 2
+    - Column: 1
     - HighestPoint: 200
+    - Metallic: 0.282
+    - Smoothness: 0.163
+    - Vector1_14abb9dca9a943f086576235e0df49a2: 0.65
     - Vector1_2d1348ddd5d345f396b5e0f9e5341808: 2
-    - Vector1_3e399f064c3f45088c42a438a5f222ad: 6
+    - Vector1_3e399f064c3f45088c42a438a5f222ad: 9
     - _AlphaClip: 0
     - _Blend: 0
     - _BumpScale: 1
