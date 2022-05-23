@@ -33,7 +33,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - HeightColourMap:
-        m_Texture: {fileID: 2800000, guid: 385e08262255d2e4e9b8ee670c2dd615, type: 3}
+        m_Texture: {fileID: 2800000, guid: a4eef81ce1752584a96a5b50bff7edd6, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BaseMap:
@@ -95,11 +95,11 @@ Material:
     m_Floats:
     - Column: 1
     - HighestPoint: 200
-    - Metallic: 0.282
-    - Smoothness: 0.163
+    - Metallic: 0
+    - Smoothness: 0
     - Vector1_14abb9dca9a943f086576235e0df49a2: 0.65
-    - Vector1_2d1348ddd5d345f396b5e0f9e5341808: 2
-    - Vector1_3e399f064c3f45088c42a438a5f222ad: 9
+    - Vector1_2d1348ddd5d345f396b5e0f9e5341808: 3
+    - Vector1_3e399f064c3f45088c42a438a5f222ad: 1
     - _AlphaClip: 0
     - _Blend: 0
     - _BumpScale: 1

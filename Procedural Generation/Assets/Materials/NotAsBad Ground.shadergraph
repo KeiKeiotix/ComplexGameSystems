@@ -832,7 +832,7 @@
     "m_CustomColors": {
         "m_SerializableColors": []
     },
-    "m_Space": 4
+    "m_Space": 2
 }
 
 {
@@ -2096,9 +2096,9 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -145.00001525878907,
-            "y": 318.0,
-            "width": 117.00000762939453,
+            "x": -132.0,
+            "y": 317.0,
+            "width": 117.0,
             "height": 34.0
         }
     },

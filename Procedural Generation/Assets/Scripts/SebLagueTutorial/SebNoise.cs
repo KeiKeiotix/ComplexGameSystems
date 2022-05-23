@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class Noise 
+public static class SebNoise 
 {
 
     public enum NormalizeMode { Local, Global };

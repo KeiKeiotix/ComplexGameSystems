@@ -556,14 +556,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44fef79510b489f4195f59e178b75114, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  xSize: 128
-  zSize: 128
-  resolution: 1
+  mapSize: 128
+  scale: 32
   Frequency: 5
   Amplitude: 8
   octaves: 3
-  OctaveFrequency: 5
-  OctaveAmplititude: 0.5
+  OctaveFrequency: 2.5
+  OctaveAmplititude: 0.452
   update: 0
 --- !u!23 &2038409087
 MeshRenderer:
@@ -584,7 +583,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: c81028f8fee90de4991d9db5bea015e9, type: 2}
+  - {fileID: 2100000, guid: c21c7060bb407bc4e97a370831ae3ce3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

@@ -8,12 +8,11 @@ public class OldMeshGenerator : MonoBehaviour
 {
 
     [Header("General")]
-    public int xSize = 64;
-    public int zSize = 64;
+    public int mapSize = 64;
 
-    [Tooltip("Not in use")]
-    [Range(1f, 10f)]
-    public int resolution = 2;
+    [Tooltip("Higher scale is more 'zoomed in'")]
+    [Range(0.1f, 50f)]
+    public float scale = 2;
 
     [Header("Noisemap")]
 
@@ -74,35 +73,47 @@ public class OldMeshGenerator : MonoBehaviour
     void CreateShape()
     {
 
-        vertices = new Vector3[(xSize + 1) * (zSize + 1)];
-        uv = new Vector2[(xSize + 1) * (zSize + 1)];
+        vertices = new Vector3[(mapSize + 1) * (mapSize + 1)];
+        uv = new Vector2[(mapSize + 1) * (mapSize + 1)];
 
 
-        for (int z = 0, i = 0; z < zSize + 1; z++)
+        float[,] noiseMap = Noise.GetNoiseMap(0, 0, mapSize + 1, scale, 0);
+
+        
+
+        for (int y = 0, i = 0; y < mapSize + 1; y++)
         {
-            for (int x = 0; x < xSize + 1; x++, i++)
+            for (int x = 0; x < mapSize + 1; x++, i++)
             {
-                float y = NoiseCalculation((float)x / xSize, (float)z / zSize); // Mathf.PerlinNoise((float)x/xSize * 5, (float)z /zSize * 5) * 3;
 
-                vertices[i] = new Vector3(x, y, z);
-                uv[i] = new Vector2(z / (float)zSize, x / (float)xSize);
+                float mapHeight;
+                //old noisemap, keeping for a debug reason
+                mapHeight = NoiseCalculation((float)x / mapSize, (float)y / mapSize); // Mathf.PerlinNoise((float)x/xSize * 5, (float)z /zSize * 5) * 3;
+                //end old
+
+                mapHeight = noiseMap[x, y];
+
+
+
+                vertices[i] = new Vector3(x, mapHeight, y);
+                uv[i] = new Vector2(y / (float)mapSize, x / (float)mapSize);
             }
         }
 
-        triangles = new int[xSize * zSize * 6];
+        triangles = new int[mapSize * mapSize * 6];
 
 
-        for (int z = 0, vert = 0, tris = 0; z < zSize; z++, vert++)
+        for (int z = 0, vert = 0, tris = 0; z < mapSize; z++, vert++)
         {
-            for (int x = 0; x < xSize; x++, vert++, tris += 6)
+            for (int x = 0; x < mapSize; x++, vert++, tris += 6)
             {
                 triangles[tris + 0] = vert + 0;
-                triangles[tris + 1] = vert + xSize + 1;
+                triangles[tris + 1] = vert + mapSize + 1;
                 triangles[tris + 2] = vert + 1;
 
                 triangles[tris + 3] = vert + 1;
-                triangles[tris + 4] = vert + xSize + 1;
-                triangles[tris + 5] = vert + xSize + 2;
+                triangles[tris + 4] = vert + mapSize + 1;
+                triangles[tris + 5] = vert + mapSize + 2;
             }
         }
 
