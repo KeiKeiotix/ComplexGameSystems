@@ -54,8 +54,6 @@ public class OldMeshGenerator : MonoBehaviour
   
     int[] triangles;
 
-
-
     void Start()
     {
         mesh = new Mesh();
@@ -66,9 +64,6 @@ public class OldMeshGenerator : MonoBehaviour
         UpdateMesh();
         
     }
-
-
-
 
     void Update()
     {
@@ -108,9 +103,6 @@ public class OldMeshGenerator : MonoBehaviour
             {
 
                 float noiseVal;
-                //old noisemap, keeping for a debug reason
-                //mapHeight = NoiseCalculation((float)x / mapSize, (float)y / mapSize); // Mathf.PerlinNoise((float)x/xSize * 5, (float)z /zSize * 5) * 3;
-                //end old
 
                 noiseVal = baseNoiseMap[x, y];
 
@@ -166,7 +158,6 @@ public class OldMeshGenerator : MonoBehaviour
         material.SetTexture("BiomeDataMap", biomeDataTexture);
         material.SetFloat("VertexHeightScale", mapHeight);
 
-        Debug.Log(material.HasProperty("BiomeDataMap"));
 
         mesh.RecalculateNormals();
     }
