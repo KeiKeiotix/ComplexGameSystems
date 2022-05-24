@@ -10,11 +10,15 @@ public class OldMeshGenerator : MonoBehaviour
     [Header("General")]
     public int mapSize = 64;
 
-    [Tooltip("Higher scale is more 'zoomed in'")]
-    [Range(0.1f, 50f)]
-    public float scale = 2;
+    [Tooltip("Height multiplier for the mesh")]
+    public int mapHeight = 10;
+
 
     [Header("Noisemap")]
+
+    [Tooltip("How much 'noise' a tile uses, 10 will make a tile use a range of 10 reading from noise.")]
+    [Range(0.1f, 600f)]
+    public float noiseScale = 5;
 
     [Tooltip("Frequency of overall mesh")]
     [Range(0.01f, 100f)]
@@ -36,15 +40,18 @@ public class OldMeshGenerator : MonoBehaviour
     [Range(0f, 2f)]
     public float OctaveAmplititude = 0.5f; //"Persistance"
 
+    public Material material;
 
     [Header("Debug")]
     [Tooltip("toggle on to force mesh update")]
     public bool update = false;
 
     Mesh mesh;
+    Texture2D biomeDataTexture;
 
     Vector3[] vertices;
     Vector2[] uv;
+  
     int[] triangles;
 
 
@@ -53,11 +60,14 @@ public class OldMeshGenerator : MonoBehaviour
     {
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
-       // GetComponent<MeshCollider>().sharedMesh = mesh;
+        GetComponent<MeshRenderer>().material = material;
 
         CreateShape();
         UpdateMesh();
+        
     }
+
+
 
 
     void Update()
@@ -70,15 +80,26 @@ public class OldMeshGenerator : MonoBehaviour
         }
     }
 
+    public static Texture2D TextureFromColourMap(Color[] colourmap, int mapSize)
+    {
+        Texture2D texture = new Texture2D(mapSize, mapSize);
+        texture.filterMode = FilterMode.Point;
+        texture.wrapMode = TextureWrapMode.Clamp;
+        texture.SetPixels(colourmap);
+        texture.Apply();
+        return texture;
+    }
+
     void CreateShape()
     {
 
         vertices = new Vector3[(mapSize + 1) * (mapSize + 1)];
         uv = new Vector2[(mapSize + 1) * (mapSize + 1)];
 
+       Color[] biomeDataColourMap = new Color[(mapSize + 1) * (mapSize + 1)];
 
-        float[,] noiseMap = Noise.GetNoiseMap(0, 0, mapSize + 1, scale, 0);
-
+        float[,] baseNoiseMap = Noise.GetNoiseMap(0, 0, mapSize + 1, noiseScale, 0);
+        float[,] bumpMap = Noise.GetNoiseMap(0, 0, mapSize + 1, noiseScale * 10, 0);
         
 
         for (int y = 0, i = 0; y < mapSize + 1; y++)
@@ -86,22 +107,38 @@ public class OldMeshGenerator : MonoBehaviour
             for (int x = 0; x < mapSize + 1; x++, i++)
             {
 
-                float mapHeight;
+                float noiseVal;
                 //old noisemap, keeping for a debug reason
-                mapHeight = NoiseCalculation((float)x / mapSize, (float)y / mapSize); // Mathf.PerlinNoise((float)x/xSize * 5, (float)z /zSize * 5) * 3;
+                //mapHeight = NoiseCalculation((float)x / mapSize, (float)y / mapSize); // Mathf.PerlinNoise((float)x/xSize * 5, (float)z /zSize * 5) * 3;
                 //end old
 
-                mapHeight = noiseMap[x, y];
+                noiseVal = baseNoiseMap[x, y];
 
+                float finalHeight = noiseVal * mapHeight;
 
+                float upper = 0.5f;
+                float lower = 0.35f;
 
-                vertices[i] = new Vector3(x, mapHeight, y);
+                if (baseNoiseMap[x, y] >= upper)
+                {
+                    finalHeight += (bumpMap[x, y] * mapHeight / 2) * (baseNoiseMap[x, y] - upper);
+                }
+                else if (baseNoiseMap[x,y] <= lower)
+                {
+                    float wave = Mathf.Sin(x + y) * Mathf.Min((-baseNoiseMap[x, y] + lower), 0.1f) * 10;
+                    finalHeight = lower * mapHeight + wave;
+                }
+
+                biomeDataColourMap[i].a = (byte)Mathf.Floor((noiseVal*255));
+                vertices[i] = new Vector3(x, finalHeight, y);
                 uv[i] = new Vector2(y / (float)mapSize, x / (float)mapSize);
             }
         }
 
         triangles = new int[mapSize * mapSize * 6];
-
+        Debug.Log(biomeDataColourMap[1].a + " " + biomeDataColourMap[100].a + " " + biomeDataColourMap[1000].a);
+        biomeDataTexture = TextureFromColourMap(biomeDataColourMap, mapSize);
+        
 
         for (int z = 0, vert = 0, tris = 0; z < mapSize; z++, vert++)
         {
@@ -125,6 +162,11 @@ public class OldMeshGenerator : MonoBehaviour
         mesh.vertices = vertices;
         mesh.triangles = triangles;
         mesh.uv = uv;
+
+        material.SetTexture("BiomeDataMap", biomeDataTexture);
+        material.SetFloat("VertexHeightScale", mapHeight);
+
+        Debug.Log(material.HasProperty("BiomeDataMap"));
 
         mesh.RecalculateNormals();
     }
@@ -158,5 +200,7 @@ public class OldMeshGenerator : MonoBehaviour
 
         return octaveFinal;
     }
+
+
 
 }

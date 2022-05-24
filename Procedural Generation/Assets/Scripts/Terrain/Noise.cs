@@ -15,18 +15,18 @@ public static class Noise
         float xOffset = rand.Next(-100000, 100000);
         float yOffset = rand.Next(-100000, 100000);
 
-        float pointDist = scale / mapSize;
+        float pointDist =  scale / mapSize;
 
-        float topLeftX = (mapX + xOffset) * pointDist;
-        float topLeftY = (mapY + yOffset) * pointDist;
+        float topLeftX = (mapX * scale) + xOffset;
+        float topLeftY = (mapY * scale) + yOffset;
 
 
         for (int y = 0; y < mapSize; y++)
         {
             for (int x = 0; x < mapSize; x++)
             {
-                float xPos = topLeftX + (x / pointDist);
-                float yPos = topLeftY + (y / pointDist);
+                float xPos = topLeftX + (x * pointDist);
+                float yPos = topLeftY + (y * pointDist);
                 float perlinVal = PerlinNoise(xPos, yPos);
 
                 noiseMap[x, y] = perlinVal;

@@ -94,6 +94,8 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - Column: 1
+    - HeightValue: 0
+    - Height_Scaling: 1
     - HighestPoint: 200
     - Metallic: 0
     - Smoothness: 0

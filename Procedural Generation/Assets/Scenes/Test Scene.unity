@@ -557,12 +557,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mapSize: 128
-  scale: 32
+  mapHeight: 20
+  noiseScale: 5
   Frequency: 5
   Amplitude: 8
   octaves: 3
   OctaveFrequency: 2.5
   OctaveAmplititude: 0.452
+  material: {fileID: 2100000, guid: c21c7060bb407bc4e97a370831ae3ce3, type: 2}
   update: 0
 --- !u!23 &2038409087
 MeshRenderer:
