@@ -5,15 +5,14 @@ using UnityEngine;
 public static class Noise
 {
 
-    public static float[,] GetNoiseMap(int mapX, int mapY, int mapSize, float scale, int seed)
+    public static float[,] GetNoiseMap(int mapX, int mapY, int mapSize, float scale, Vector2 offset)
     {
         float[,] noiseMap = new float[mapSize, mapSize];
 
 
-        System.Random rand = new System.Random(seed);
-        rand.Next();
-        float xOffset = rand.Next(-100000, 100000);
-        float yOffset = rand.Next(-100000, 100000);
+
+        float xOffset = offset.x;
+        float yOffset = offset.y;
 
         float pointDist =  scale / mapSize;
 

@@ -51,7 +51,7 @@ public class OldMeshGenerator : MonoBehaviour
 
     Vector3[] vertices;
     Vector2[] uv;
-  
+
     int[] triangles;
 
     void Start()
@@ -62,7 +62,7 @@ public class OldMeshGenerator : MonoBehaviour
 
         CreateShape();
         UpdateMesh();
-        
+
     }
 
     void Update()
@@ -91,11 +91,11 @@ public class OldMeshGenerator : MonoBehaviour
         vertices = new Vector3[(mapSize + 1) * (mapSize + 1)];
         uv = new Vector2[(mapSize + 1) * (mapSize + 1)];
 
-       Color[] biomeDataColourMap = new Color[(mapSize + 1) * (mapSize + 1)];
+        Color[] biomeDataColourMap = new Color[(mapSize + 1) * (mapSize + 1)];
 
-        float[,] baseNoiseMap = Noise.GetNoiseMap(0, 0, mapSize + 1, noiseScale, 0);
-        float[,] bumpMap = Noise.GetNoiseMap(0, 0, mapSize + 1, noiseScale * 10, 0);
-        
+        float[,] baseNoiseMap = Noise.GetNoiseMap(0, 0, mapSize + 1, noiseScale, new  Vector2(0,0));
+        float[,] bumpMap = Noise.GetNoiseMap(0, 0, mapSize + 1, noiseScale * 10, new Vector2(0,0));
+
 
         for (int y = 0, i = 0; y < mapSize + 1; y++)
         {
@@ -115,22 +115,26 @@ public class OldMeshGenerator : MonoBehaviour
                 {
                     finalHeight += (bumpMap[x, y] * mapHeight / 2) * (baseNoiseMap[x, y] - upper);
                 }
-                else if (baseNoiseMap[x,y] <= lower)
+                else if (baseNoiseMap[x, y] <= lower)
                 {
                     float wave = Mathf.Sin(x + y) * Mathf.Min((-baseNoiseMap[x, y] + lower), 0.1f) * 10;
                     finalHeight = lower * mapHeight + wave;
                 }
 
-                biomeDataColourMap[i].a = (byte)Mathf.Floor((noiseVal*255));
+                biomeDataColourMap[i].r = 0.5f;
+                biomeDataColourMap[i].g = 0.5f;
+                biomeDataColourMap[i].b = 0.5f;
+
+                biomeDataColourMap[i].a = noiseVal;
                 vertices[i] = new Vector3(x, finalHeight, y);
-                uv[i] = new Vector2(y / (float)mapSize, x / (float)mapSize);
+                uv[i] = new Vector2(x / (float)mapSize, y / (float)mapSize);
             }
         }
-
+       
         triangles = new int[mapSize * mapSize * 6];
         Debug.Log(biomeDataColourMap[1].a + " " + biomeDataColourMap[100].a + " " + biomeDataColourMap[1000].a);
-        biomeDataTexture = TextureFromColourMap(biomeDataColourMap, mapSize);
-        
+        biomeDataTexture = TextureFromColourMap(biomeDataColourMap, mapSize + 1);
+
 
         for (int z = 0, vert = 0, tris = 0; z < mapSize; z++, vert++)
         {
@@ -155,9 +159,9 @@ public class OldMeshGenerator : MonoBehaviour
         mesh.triangles = triangles;
         mesh.uv = uv;
 
-        material.SetTexture("BiomeDataMap", biomeDataTexture);
         material.SetFloat("VertexHeightScale", mapHeight);
 
+        material.SetTexture("BiomeDataMap", biomeDataTexture);
 
         mesh.RecalculateNormals();
     }
