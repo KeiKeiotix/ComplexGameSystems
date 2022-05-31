@@ -565,6 +565,7 @@ MonoBehaviour:
   OctaveFrequency: 2.5
   OctaveAmplititude: 0.452
   material: {fileID: 2100000, guid: c21c7060bb407bc4e97a370831ae3ce3, type: 2}
+  biomeData: {fileID: 11400000, guid: ce91b961007abdb4a85652c69b3dac61, type: 2}
   update: 0
 --- !u!23 &2038409087
 MeshRenderer:
