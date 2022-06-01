@@ -13,13 +13,20 @@ MonoBehaviour:
   m_Name: Biomes
   m_EditorClassIdentifier: 
   biomes:
-  - noiseScale: 4
+  - noiseScale: 3
     baseBiome: 1
     activeAboveValue: 0
     forceIfAboveValue: 0
-  - noiseScale: 4
+    nothinghereyet: 0
+  - noiseScale: 3
     baseBiome: 1
     activeAboveValue: 0
     forceIfAboveValue: 0
+    nothinghereyet: 0
+  - noiseScale: 3
+    baseBiome: 1
+    activeAboveValue: 0
+    forceIfAboveValue: 0
+    nothinghereyet: 0
   forceSingleBiome: 0
-  biomeToForce: 0
+  biomeToForce: 2

@@ -8,10 +8,11 @@ public class BiomeMap
     public Color[] map;
     public int biomeCount;
 
-    public BiomeMap(int mapSize, BiomeData biomeData)
+    public BiomeMap(int mapSize, BiomeData _biomeData)
     {
         map = new Color[(mapSize + 1) * (mapSize + 1)];
 
+        biomeData = _biomeData;
         biomeCount = biomeData.biomes.Length;
     }
 
@@ -27,7 +28,7 @@ public class BiomeMap
     void MakeBiomeMap(int mapX, int mapY, int mapSize, int seed)
     {
         //dist between biomes to blend them
-        float distToBlend = 0.1f;
+        float distToBlend = 0.2f;
 
 
         //initialise the stuffs
@@ -43,8 +44,10 @@ public class BiomeMap
         //Get offsets for each biome noisemap
         for (int i = 0; i < biomeCount; i++)
         {
-            biomeOffset[i].x = rand.Next(-1000000, 1000000);
-            biomeOffset[i].y = rand.Next(-1000000, 1000000);
+
+            biomeOffset[i].x = rand.Next(-100000, 100000) + (rand.Next() / (float)int.MaxValue);
+            biomeOffset[i].y = rand.Next(-100000, 100000) + (rand.Next() / (float)int.MaxValue);
+            
         }
 
 
@@ -65,7 +68,9 @@ public class BiomeMap
             //get noisemap for each biome
             for (int i = 0; i < biomeCount; i++)
             {
-                noiseMaps[i].noiseMap = Noise.GetNoiseMap(mapX, mapY, mapSize, biomeData.biomes[i].noiseScale, biomeOffset[i]);
+                float noiseScale = biomeData.biomes[i].noiseScale;
+                noiseMaps[i] = new NoiseMap(mapSize);
+                noiseMaps[i].noiseMap = Noise.GetNoiseMap(mapX, mapY, mapSize, noiseScale, biomeOffset[i]);
             }
 
             //loop through each X/Y pos on the chunk
@@ -152,11 +157,20 @@ public class BiomeMap
         //Get the % (0 -> 1) of how much the sub-biome should be shown
         //Note: Generally wont go higher then 0.5 as then the "top" and "sub" should switch
         //distToBlend = 0.1, if heightDiff is 0.1, percent is 40% of bottom, of height is 0.4 percent is 0.1
-        float biomeRatio = Mathf.Clamp(distanceToBlend - (topBiomeHeight - subBiomeHeight), 0f, 1f);
+        float temp = (Mathf.Clamp((distanceToBlend - (topBiomeHeight - subBiomeHeight)) / (distanceToBlend / 0.5f), 0f, 1f));
+        temp = temp;
 
-        map[dataPos].r = topBiome / (float)biomeCount;
+        if (topBiomeHeight - 0.01f < subBiomeHeight)
+        {
+            Debug.Log(temp);
+        }
+        temp = dataPos/ (float)129 /(float)129;
+
+        float biomeRatio = temp; // Mathf.Clamp((distanceToBlend - (topBiomeHeight - subBiomeHeight))/(distanceToBlend/0.5f), 0f, 1f);
+
+        map[dataPos].r = 0; // topBiome / (float)biomeCount;
         map[dataPos].g = biomeRatio;
-        map[dataPos].b = subBiome / (float)biomeCount;
+        map[dataPos].b = 0; //subBiome / (float)biomeCount;
     }
 
     public void SetHeight(int dataPos, float height)
@@ -168,5 +182,9 @@ public class BiomeMap
     class NoiseMap
     {
         public float[,] noiseMap;
+        public NoiseMap(int mapSize)
+        {
+            noiseMap = new float[mapSize, mapSize];
+        }
     }
 }

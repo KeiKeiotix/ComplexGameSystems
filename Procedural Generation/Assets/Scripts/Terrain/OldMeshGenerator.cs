@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using System.IO;
 
 [RequireComponent(typeof(MeshFilter))]
 public class OldMeshGenerator : MonoBehaviour
@@ -51,6 +51,7 @@ public class OldMeshGenerator : MonoBehaviour
 
     Mesh mesh;
     Texture2D biomeDataTexture;
+    BiomeMap biomeMap;
 
     Vector3[] vertices;
     Vector2[] uv;
@@ -75,6 +76,7 @@ public class OldMeshGenerator : MonoBehaviour
         {
             update = false;
             CreateShape();
+            SavePNG();
             UpdateMesh();
         }
     }
@@ -97,7 +99,8 @@ public class OldMeshGenerator : MonoBehaviour
 
         Color[] biomeDataColourMap = new Color[(mapSize + 1) * (mapSize + 1)];
 
-        BiomeMap biomeMap = new BiomeMap(mapSize, biomeData);
+        biomeMap = new BiomeMap(mapSize, biomeData);
+        biomeMap.GenerateBiomeMap(0, 0, mapSize + 1, 0);
 
 
         float[,] baseNoiseMap = Noise.GetNoiseMap(0, 0, mapSize + 1, noiseScale, new  Vector2(0,0));
@@ -131,12 +134,8 @@ public class OldMeshGenerator : MonoBehaviour
                 }
 
 
-
-                biomeMap.map[i].r = 0.5f;
-                biomeMap.map[i].g = 0.5f;
-                biomeMap.map[i].b = 0.5f;
-
-                biomeMap.SetHeight(i, noiseVal);
+                //biomeMap.SetHeight(i, noiseVal);
+                biomeMap.SetHeight(i, 1);
                 vertices[i] = new Vector3(x, finalHeight, y);
                 uv[i] = new Vector2(x / (float)mapSize, y / (float)mapSize);
             }
@@ -144,6 +143,7 @@ public class OldMeshGenerator : MonoBehaviour
        
         triangles = new int[mapSize * mapSize * 6];
         biomeDataTexture = TextureFromColourMap(biomeMap.map, mapSize + 1);
+        
 
 
         for (int z = 0, vert = 0, tris = 0; z < mapSize; z++, vert++)
@@ -173,6 +173,8 @@ public class OldMeshGenerator : MonoBehaviour
 
         material.SetTexture("BiomeDataMap", biomeDataTexture);
 
+        material.SetFloat("BiomeCount", biomeMap.biomeCount);
+
         mesh.RecalculateNormals();
     }
 
@@ -188,7 +190,11 @@ public class OldMeshGenerator : MonoBehaviour
     //    }
     //}
 
-
+    void SavePNG()
+    {
+        byte[] bytes = biomeDataTexture.EncodeToPNG();
+        File.WriteAllBytes(Application.dataPath + "/../Image.png", bytes);
+    }
 
 
     float NoiseCalculation(float x, float y)

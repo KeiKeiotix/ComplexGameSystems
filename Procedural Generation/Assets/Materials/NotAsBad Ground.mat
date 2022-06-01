@@ -93,9 +93,10 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - Column: 1
+    - BiomeCount: 3
+    - Column: 1.58
     - HeightValue: 0
-    - Height_Scaling: 1
+    - Height_Scaling: -0.59
     - HighestPoint: 200
     - Metallic: 0
     - Smoothness: 0
@@ -128,6 +129,7 @@ Material:
     - _Surface: 0
     - _WorkflowMode: 1
     - _ZWrite: 1
+    - biomeCount: 1
     m_Colors:
     - GrassColour: {r: 0.2716714, g: 0.5188679, b: 0.2879701, a: 0}
     - GrassPos: {r: 2, g: 5, b: 0, a: 0}
