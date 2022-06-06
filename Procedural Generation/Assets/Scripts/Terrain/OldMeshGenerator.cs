@@ -54,11 +54,7 @@ public class OldMeshGenerator : MonoBehaviour
 
 
     Mesh mesh;
-    Texture2D biomeDataTexture;
-    BiomeMap biomeMap;
 
-    Vector3[] vertices;
-    Vector2[] uv;
 
 
     int[] triangles;
@@ -100,10 +96,6 @@ public class OldMeshGenerator : MonoBehaviour
     {
         terrain[0] = new TerrainData(mapSize, biomeData);
 
-        vertices = new Vector3[(mapSize + 1) * (mapSize + 1)];
-        uv = new Vector2[(mapSize + 1) * (mapSize + 1)];
-
-        biomeMap = new BiomeMap(mapSize, biomeData);
         terrain[0].biomeMap.GenerateBiomeMap(0, 0, mapSize + 1, 0);
 
 
@@ -178,23 +170,12 @@ public class OldMeshGenerator : MonoBehaviour
         material.SetFloat("VertexHeightScale", mapHeight);
 
         material.SetTexture("BiomeDataMap", terrain[0].biomeMapTexture);
-        Debug.Log(terrain[0].biomeMap.map[10].a);
+
         material.SetFloat("BiomeCount", terrain[0].biomeMap.biomeCount);
 
         mesh.RecalculateNormals();
     }
 
-    //private void OnDrawGizmos()
-    //{
-    //    if (vertices == null)
-    //    {
-    //        return;
-    //    }
-    //    for (int i = 0; i < vertices.Length; i++)
-    //    {
-    //        Gizmos.DrawSphere(vertices[i], 0.1f);
-    //    }
-    //}
 
     void SavePNG()
     {
@@ -202,21 +183,6 @@ public class OldMeshGenerator : MonoBehaviour
         File.WriteAllBytes(Application.dataPath + "/../Image.png", bytes);
     }
 
-
-    float NoiseCalculation(float x, float y)
-    {
-
-        float octaveFinal = 0.0f;
-
-
-
-        for (var i = 0; i < octaves; i++)
-        {
-            octaveFinal += Mathf.PerlinNoise(x * Mathf.Pow(OctaveFrequency, i) * Frequency, y * Mathf.Pow(OctaveFrequency, i) * Frequency) * Mathf.Pow(OctaveAmplititude, i) * Amplitude;
-        }
-
-        return octaveFinal;
-    }
 
     public class TerrainData
     {

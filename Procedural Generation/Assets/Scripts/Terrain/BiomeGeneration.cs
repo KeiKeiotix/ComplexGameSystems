@@ -5,15 +5,14 @@ using UnityEngine;
 
 public class BiomeGeneration
 {
-    public BiomeMap GenerateBiomes (BiomeMap biomeMapIn)
+    public TerrainData GenerateBiomes (TerrainData terrainData)
     {
-        BiomeMap biomeMap = biomeMapIn;
+        TerrainData terrain = terrainData;
 
 
 
 
-
-        return biomeMap;
+        return terrain;
     }
 
 
