@@ -28,7 +28,7 @@ public class BiomeMap
     void MakeBiomeMap(int mapX, int mapY, int mapSize, int seed)
     {
         //dist between biomes to blend them
-        float distToBlend = 0.2f;
+        float distToBlend = 0.1f;
 
 
         //initialise the stuffs
@@ -162,15 +162,15 @@ public class BiomeMap
 
         if (topBiomeHeight - 0.01f < subBiomeHeight)
         {
-            Debug.Log(temp);
+            //Debug.Log(temp);
         }
-        temp = dataPos/ (float)129 /(float)129;
+        //temp = dataPos/ (float)129 /(float)129;
 
         float biomeRatio = temp; // Mathf.Clamp((distanceToBlend - (topBiomeHeight - subBiomeHeight))/(distanceToBlend/0.5f), 0f, 1f);
 
-        map[dataPos].r = 0; // topBiome / (float)biomeCount;
-        map[dataPos].g = biomeRatio;
-        map[dataPos].b = 0; //subBiome / (float)biomeCount;
+        map[dataPos].r = topBiome / (float)biomeCount;
+        map[dataPos].g = biomeRatio * 2; // x2 to temporarily? fix an issue with data scaling for an unknown reason.
+        map[dataPos].b = subBiome / (float)biomeCount;
     }
 
     public void SetHeight(int dataPos, float height)
