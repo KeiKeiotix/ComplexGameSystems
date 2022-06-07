@@ -5,6 +5,14 @@ using UnityEngine;
 public class BiomeMap
 {
     BiomeData biomeData;
+
+    /*
+     * A texture is used to pass data to the shader, in this case each channel is used for:
+     * R = The # of the top biome (divided by the total # of biomes, to have the number be between 0 and 1
+     * G = how 'blended' the top and bottom biome is, used so there isnt a hard line when transitioning between biomes - distToBlend in 'MakeBiomeMap' controls size of fade
+     * B = The # of the bottom biome (divided by the total # of biomes, to have the number be between 0 and 1
+     * A = The height value the shader will use for the colour, passed in like this so the actual height can be altered from the colour-height
+     */
     public Color[] map;
     public int biomeCount;
 
@@ -17,7 +25,7 @@ public class BiomeMap
     }
 
 
-
+    //There was initially a reason to have this, I probably meant for there to be more processing on it, requiring multiple functions.
     public void GenerateBiomeMap(int mapX, int mapY, int mapSize, int seed)
     {
 
@@ -104,6 +112,7 @@ public class BiomeMap
                                 {
                                     subBiomeHeight = thisNoiseVal;
                                     subBiome = b;
+
                                 }
 
                             }
@@ -139,9 +148,18 @@ public class BiomeMap
                             }
                         }
                     }
+                    if (topBiomeForced)
+                    {
+                        //doesnt currently blend in properly
+                        SetBiomeData(i, topBiome, topBiomeHeight, subBiome, topBiomeHeight - biomeData.biomes[topBiome].activeAboveValue, distToBlend);
+                        if (topBiomeHeight - biomeData.biomes[topBiome].activeAboveValue > 0.02f) {
+                            //Debug.Log(topBiomeHeight - biomeData.biomes[topBiome].activeAboveValue + " " + topBiome + " " + subBiome);
+                        }
 
-                    SetBiomeData(i, topBiome, topBiomeHeight, subBiome, subBiomeHeight, distToBlend);
-
+                    } else
+                    {
+                        SetBiomeData(i, topBiome, topBiomeHeight, subBiome, subBiomeHeight, distToBlend);
+                    }
                 }
             }
         }
@@ -157,16 +175,16 @@ public class BiomeMap
         //Get the % (0 -> 1) of how much the sub-biome should be shown
         //Note: Generally wont go higher then 0.5 as then the "top" and "sub" should switch
         //distToBlend = 0.1, if heightDiff is 0.1, percent is 40% of bottom, of height is 0.4 percent is 0.1
-        float temp = (Mathf.Clamp((distanceToBlend - (topBiomeHeight - subBiomeHeight)) / (distanceToBlend / 0.5f), 0f, 1f));
-        temp = temp;
 
-        if (topBiomeHeight - 0.01f < subBiomeHeight)
-        {
-            //Debug.Log(temp);
-        }
-        //temp = dataPos/ (float)129 /(float)129;
-
-        float biomeRatio = temp; // Mathf.Clamp((distanceToBlend - (topBiomeHeight - subBiomeHeight))/(distanceToBlend/0.5f), 0f, 1f);
+        /*
+         * topBiomeHeight - subBiomeHeight = difference between the heights
+         * if diff > distanceToBlend output is 0
+         * if diff = 0, LHS will always = distanceToBlend
+         * diff will never be negative, as that will cause topBiomeHeight and subBiomeHeight to switch in previous logic
+         * with that above, dividing by distToBlend / 0.5f will scale it to 0 -> 0.5f
+         * in a clamp, just in case.
+         */
+        float biomeRatio = (Mathf.Clamp((distanceToBlend - (topBiomeHeight - subBiomeHeight)) / (distanceToBlend / 0.5f), 0f, 1f));
 
         map[dataPos].r = topBiome / (float)biomeCount;
         map[dataPos].g = biomeRatio * 2; // x2 to temporarily? fix an issue with data scaling for an unknown reason.
@@ -178,7 +196,7 @@ public class BiomeMap
         map[dataPos].a = height;
     }
 
-
+    //Stores noisemap, only purpose is to make it easier to have an array of an array
     class NoiseMap
     {
         public float[,] noiseMap;

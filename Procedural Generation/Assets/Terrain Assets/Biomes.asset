@@ -15,8 +15,8 @@ MonoBehaviour:
   biomes:
   - noiseScale: 3
     baseBiome: 1
-    activeAboveValue: 0
-    forceIfAboveValue: 0
+    activeAboveValue: 0.5
+    forceIfAboveValue: 1
     nothinghereyet: 0
   - noiseScale: 3
     baseBiome: 1

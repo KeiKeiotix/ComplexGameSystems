@@ -54,7 +54,7 @@ public class OldMeshGenerator : MonoBehaviour
 
 
     Mesh mesh;
-
+    MeshCollider meshCollider;
 
 
     int[] triangles;
@@ -66,7 +66,8 @@ public class OldMeshGenerator : MonoBehaviour
         GetComponent<MeshFilter>().mesh = mesh;
         GetComponent<MeshRenderer>().material = material;
 
-        CreateShape();
+
+        CreateMesh();
         UpdateMesh();
 
     }
@@ -76,8 +77,9 @@ public class OldMeshGenerator : MonoBehaviour
         if (update)
         {
             update = false;
-            CreateShape();
-            SavePNG();
+            CreateMesh();
+            //SavePNG is here so it is possible to check the texture as a .png to see if the values are right
+            //SavePNG();
             UpdateMesh();
         }
     }
@@ -91,15 +93,21 @@ public class OldMeshGenerator : MonoBehaviour
         texture.Apply();
         return texture;
     }
-
-    void CreateShape()
+    
+    /*
+     * Goes through all the steps required to create the mesh
+     * Currently the mesh is only applied to the gameobject this script is currently attached to (*1)
+     * (*1) changeable in UpdateMesh(), more info @ TerrainData and/or UpdateMesh()
+     */
+    void CreateMesh()
     {
         terrain[0] = new TerrainData(mapSize, biomeData);
 
         terrain[0].biomeMap.GenerateBiomeMap(0, 0, mapSize + 1, 0);
 
-
-        float[,] baseNoiseMap = Noise.GetNoiseMap(0, 0, mapSize + 1, noiseScale, new  Vector2(0,0));
+        //main noisemap for the chunk
+        float[,] baseNoiseMap = Noise.GetNoiseMap(0, 0, mapSize + 1, noiseScale, new Vector2(0, 0));
+        //secondary noisemap that adds more texture to higher elevations
         float[,] bumpMap = Noise.GetNoiseMap(0, 0, mapSize + 1, noiseScale * 10, new Vector2(0,0));
 
         
@@ -109,31 +117,35 @@ public class OldMeshGenerator : MonoBehaviour
         {
             for (int x = 0; x < mapSize + 1; x++, i++)
             {
-
+                //noise val is used to colour the texture
                 float noiseVal;
 
                 noiseVal = baseNoiseMap[x, y];
 
-                float mapHeightMap = noiseVal * mapHeight;
+                //changed to vertHeight here so the height can be editable without changing the resulting colour out
+                float vertHeight = noiseVal * mapHeight;
 
+                //above this val is where the extra 'rockiness' starts
                 float upper = 0.5f;
+                //below this value is where the wave effects start
                 float lower = 0.35f;
 
+                //both effects are changeable
                 if (baseNoiseMap[x, y] >= upper)
                 {
-                    mapHeightMap += (bumpMap[x, y] * mapHeight / 2) * (baseNoiseMap[x, y] - upper);
+                    vertHeight += (bumpMap[x, y] * mapHeight / 2) * (baseNoiseMap[x, y] - upper);
                 }
                 else if (baseNoiseMap[x, y] <= lower)
                 {
                     float wave = Mathf.Sin(x + y) * Mathf.Min((-baseNoiseMap[x, y] + lower), 0.1f) * 10;
-                    mapHeightMap = lower * mapHeight + wave;
+                    vertHeight = lower * mapHeight + wave;
                 }
 
 
                 terrain[0].biomeMap.SetHeight(i, noiseVal);
    
 
-                terrain[0].vertices[i] = new Vector3(x, mapHeightMap, y);
+                terrain[0].vertices[i] = new Vector3(x, vertHeight, y);
                 terrain[0].uv[i] = new Vector2(x / (float)mapSize, y / (float)mapSize);
             }
         }
@@ -141,8 +153,8 @@ public class OldMeshGenerator : MonoBehaviour
         terrain[0].biomeMapTexture = TextureFromColourMap(terrain[0].biomeMap.map, mapSize + 1);
         
 
-
-        for (int z = 0, vert = 0, tris = 0; z < mapSize; z++, vert++)
+        //probably should be in TerrainDate but here with direct access to the triangles array instead for now
+        for (int y = 0, vert = 0, tris = 0; y < mapSize; y++, vert++)
         {
             for (int x = 0; x < mapSize; x++, vert++, tris += 6)
             {
@@ -160,7 +172,8 @@ public class OldMeshGenerator : MonoBehaviour
 
     public void UpdateMesh()
     {
-        terrain[0].Update(material);
+        //this does update its own info correctly, but it does not create its own object 
+        //terrain[0].Update(material);
 
         mesh.Clear();
         mesh.vertices = terrain[0].vertices;
@@ -207,8 +220,6 @@ public class OldMeshGenerator : MonoBehaviour
             biomeMap = new BiomeMap(mapSize, biomeData);
             biomeMapTexture = new Texture2D(mapSize + 1, mapSize + 1);
             mesh = new Mesh();
-
-    
         }
 
         public void Update(Material material)
@@ -226,6 +237,7 @@ public class OldMeshGenerator : MonoBehaviour
             mesh.RecalculateNormals();
         }
 
+        //Get the heights of just the verts to store then in a 2d float array to edit the terrain
         float[,] GetVerticeHeight()
         {
             float[,] vertHeight = new float[mapSize + 1, mapSize + 1];
@@ -240,6 +252,7 @@ public class OldMeshGenerator : MonoBehaviour
             return vertHeight;
         }
 
+        //To return a 2d float array that was edited
         void SetVertHeight(float[,] vertHeight)
         {
             for (int y = 0, i = 0; y < mapSize + 1; y++)

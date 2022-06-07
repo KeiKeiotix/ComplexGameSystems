@@ -5,6 +5,8 @@ using UnityEngine;
 public static class Noise
 {
 
+
+    //Generates noisemap to requested size. Scale is how 'much' noise goes into the one noisemap. Higher scale = more noise gone through
     public static float[,] GetNoiseMap(int mapX, int mapY, int mapSize, float scale, Vector2 offset)
     {
         float[,] noiseMap = new float[mapSize, mapSize];
